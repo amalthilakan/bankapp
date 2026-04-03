@@ -77,6 +77,17 @@ export function normalizeCustomerStatus(value?: string) {
   return getSingleStatus(value);
 }
 
+async function safeAggregate<T>(collection: any, pipeline: any[]): Promise<T[]> {
+  try {
+    return await collection.aggregate(pipeline).toArray();
+  } catch (error: any) {
+    if (error.code === 26 || (error.message && error.message.includes('ns does not exist'))) {
+      return [];
+    }
+    throw error;
+  }
+}
+
 export async function getCustomers(filters: { query?: string; status?: string } = {}) {
   const db = await getDb();
   const usersCollection = db.collection<UserRecord>('users');
@@ -100,9 +111,8 @@ export async function getCustomers(filters: { query?: string; status?: string } 
   }
 
   const userIds = users.map((user) => user.id);
-
   const [walletAggregates, bankAggregates, transactionAggregates] = await Promise.all([
-    db.collection('walletAccounts').aggregate<WalletAggregate>([
+    safeAggregate<WalletAggregate>(db.collection('walletAccounts'), [
       { $match: { ownerId: { $in: userIds } } },
       {
         $group: {
@@ -111,8 +121,8 @@ export async function getCustomers(filters: { query?: string; status?: string } 
           walletCount: { $sum: 1 },
         },
       },
-    ]).toArray(),
-    db.collection('bankAccounts').aggregate<BankAggregate>([
+    ]),
+    safeAggregate<BankAggregate>(db.collection('bankAccounts'), [
       { $match: { ownerId: { $in: userIds } } },
       {
         $group: {
@@ -120,8 +130,8 @@ export async function getCustomers(filters: { query?: string; status?: string } 
           bankAccountCount: { $sum: 1 },
         },
       },
-    ]).toArray(),
-    db.collection('transactions').aggregate<TransactionAggregate>([
+    ]),
+    safeAggregate<TransactionAggregate>(db.collection('transactions'), [
       { $match: { ownerId: { $in: userIds } } },
       {
         $group: {
@@ -129,7 +139,7 @@ export async function getCustomers(filters: { query?: string; status?: string } 
           transactionCount: { $sum: 1 },
         },
       },
-    ]).toArray(),
+    ]),
   ]);
 
   const walletStats = new Map(walletAggregates.map((aggregate) => [aggregate._id, aggregate]));

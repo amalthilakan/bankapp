@@ -120,7 +120,15 @@ async function dropLegacyUniqueIndex<T extends Document>(
   collection: Collection<T>,
   keyPattern: Record<string, 1 | -1>
 ) {
-  const indexes = await collection.listIndexes().toArray();
+  let indexes: any[];
+  try {
+    indexes = await collection.listIndexes().toArray();
+  } catch (error: any) {
+    if (error.code === 26 || (error.message && String(error.message).includes('ns does not exist'))) {
+      return;
+    }
+    throw error;
+  }
   const legacyIndex = indexes.find((index) => {
     const keys = Object.entries(index.key);
     const expectedKeys = Object.entries(keyPattern);
