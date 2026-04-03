@@ -1,9 +1,10 @@
 'use client';
 
 import { X, Wallet } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useWallet } from '@/features/wallet/context/WalletContext';
 import type { Currency } from '@/shared/types';
+import styles from './Modal.module.css';
 
 interface DepositModalProps {
   isOpen: boolean;
@@ -12,28 +13,46 @@ interface DepositModalProps {
 
 const CURRENCIES: Currency[] = ['USD', 'GBP', 'EUR', 'INR'];
 
-import styles from './Modal.module.css';
-
 export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
-  const { walletAccounts, depositFunds } = useWallet();
+  const { walletAccounts, bankAccounts, depositFunds } = useWallet();
   const [amount, setAmount] = useState('');
   const [currency, setCurrency] = useState<Currency>('USD');
   const [walletId, setWalletId] = useState('');
+  const [bankAccountId, setBankAccountId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    const preferredBankAccountId = bankAccounts.find((account) => account.isSelected)?.id ?? bankAccounts[0]?.id ?? '';
+
+    setBankAccountId((current) => (
+      bankAccounts.some((account) => account.id === current) ? current : preferredBankAccountId
+    ));
+  }, [bankAccounts, isOpen]);
+
   if (!isOpen) return null;
+
+  const selectedBankAccount = bankAccounts.find((account) => account.id === bankAccountId);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    if (!bankAccountId) { setError('Please select a bank account'); return; }
     if (!walletId) { setError('Please select a wallet'); return; }
     if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) { setError('Enter a valid amount'); return; }
+    if (selectedBankAccount && Number(amount) > selectedBankAccount.balance) {
+      setError(`Insufficient bank balance. Available: $${selectedBankAccount.balance.toLocaleString()}`);
+      return;
+    }
 
     setLoading(true);
     try {
-      await depositFunds(walletId, Number(amount), currency);
+      await depositFunds(walletId, bankAccountId, Number(amount), currency);
       setSuccess(true);
       setTimeout(() => { setSuccess(false); onClose(); resetForm(); }, 1500);
     } catch (err) {
@@ -43,7 +62,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     }
   };
 
-  const resetForm = () => { setAmount(''); setWalletId(''); setCurrency('USD'); setError(''); };
+  const resetForm = () => { setAmount(''); setWalletId(''); setBankAccountId(''); setCurrency('USD'); setError(''); };
 
   const handleClose = () => { resetForm(); onClose(); };
 
@@ -62,7 +81,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
             </div>
             <div>
               <h2 className={styles.title}>Add to Wallet</h2>
-              <p className={styles.subtitle}>Deposit funds into your wallet</p>
+              <p className={styles.subtitle}>Deposit funds into your wallet from a linked bank account</p>
             </div>
           </div>
           <button onClick={handleClose} className={styles.closeBtn}>
@@ -71,6 +90,29 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
+          {/* Bank Account Select */}
+          <div className={styles.field}>
+            <label className={styles.label}>From Bank Account</label>
+            <select
+              id="deposit-bank-account-select"
+              value={bankAccountId}
+              onChange={(e) => setBankAccountId(e.target.value)}
+              className={styles.select}
+            >
+              <option value="">Choose a bank account...</option>
+              {bankAccounts.map((account) => (
+                <option key={account.id} value={account.id}>{account.bankName} - ${account.balance.toLocaleString()}</option>
+              ))}
+            </select>
+          </div>
+
+          {selectedBankAccount && (
+            <div className={styles.availableBalance}>
+              <span className={styles.balanceLabel}>Available Bank Balance</span>
+              <span className={styles.balanceValue}>${selectedBankAccount.balance.toLocaleString()}</span>
+            </div>
+          )}
+
           {/* Wallet Select */}
           <div className={styles.field}>
             <label className={styles.label}>Select Wallet</label>
@@ -118,7 +160,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
           <button
             id="deposit-submit-btn"
             type="submit"
-            disabled={loading || success}
+            disabled={loading || success || bankAccounts.length === 0}
             className={`${styles.submitBtn} ${success ? styles.submitSuccess : ''}`}
           >
             {success ? '✓ Deposited Successfully!' : loading ? 'Processing...' : 'Confirm Deposit'}

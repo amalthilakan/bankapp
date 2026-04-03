@@ -11,8 +11,9 @@ interface BalanceCardProps {
 }
 
 export default function BalanceCard({ onDeposit, onWithdraw, onAddWallet }: BalanceCardProps) {
-  const { summary, loading, walletAccounts } = useWallet();
+  const { summary, loading, walletAccounts, bankAccounts } = useWallet();
   const hasWallets = walletAccounts.length > 0;
+  const hasBankAccounts = bankAccounts.length > 0;
   const hasChange = (summary?.changePercent ?? 0) !== 0;
 
   const formatBalance = (amount: number) => {
@@ -55,7 +56,7 @@ export default function BalanceCard({ onDeposit, onWithdraw, onAddWallet }: Bala
         <button
           id="btn-add-to-wallet"
           onClick={onDeposit}
-          disabled={!hasWallets}
+          disabled={!hasWallets || !hasBankAccounts}
           className={styles.btnPrimary}
         >
           Add to wallet
@@ -82,6 +83,12 @@ export default function BalanceCard({ onDeposit, onWithdraw, onAddWallet }: Bala
       {!loading && !hasWallets && (
         <p className={styles.helperText}>
           Add your first wallet before depositing or withdrawing funds.
+        </p>
+      )}
+
+      {!loading && hasWallets && !hasBankAccounts && (
+        <p className={styles.helperText}>
+          Add a bank account before moving money into your wallet.
         </p>
       )}
     </div>

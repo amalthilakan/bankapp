@@ -4,18 +4,18 @@ import { MoreVertical, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import type { BankAccount } from '@/shared/types';
 import { useWallet } from '@/features/wallet/context/WalletContext';
+import styles from './BankAccountCard.module.css';
 
 interface BankAccountCardProps {
   account: BankAccount;
   isSelected?: boolean;
 }
 
-import styles from './BankAccountCard.module.css';
-
 export default function BankAccountCard({ account, isSelected }: BankAccountCardProps) {
-  const { removeBankAccount } = useWallet();
+  const { removeBankAccount, selectBankAccount } = useWallet();
   const [menuOpen, setMenuOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [selecting, setSelecting] = useState(false);
   const changeText = account.change === 0
     ? account.balance > 0
       ? 'Opening balance'
@@ -37,9 +37,35 @@ export default function BankAccountCard({ account, isSelected }: BankAccountCard
     }
   };
 
+  const handleSelect = async () => {
+    if (isSelected || selecting || deleting) {
+      return;
+    }
+
+    setSelecting(true);
+    try {
+      await selectBankAccount(account.id);
+    } finally {
+      setSelecting(false);
+    }
+  };
+
   return (
     <div
       className={`${styles.card} ${isSelected ? styles.cardSelected : ''}`}
+      role="button"
+      tabIndex={0}
+      aria-pressed={isSelected}
+      aria-busy={selecting}
+      onClick={() => {
+        void handleSelect();
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          void handleSelect();
+        }
+      }}
     >
       {/* Header */}
       <div className={styles.header}>
@@ -58,13 +84,18 @@ export default function BankAccountCard({ account, isSelected }: BankAccountCard
       </p>
 
       {/* Change */}
-      <p className={styles.change}>{changeText}</p>
+      <p className={styles.change}>
+        {selecting ? 'Selecting funding account...' : isSelected ? 'Selected funding account' : changeText}
+      </p>
 
       {/* Dropdown */}
       {menuOpen && (
         <div className={styles.dropdown}>
           <button
-            onClick={handleDelete}
+            onClick={(event) => {
+              event.stopPropagation();
+              void handleDelete();
+            }}
             disabled={deleting}
             className={styles.removeBtn}
           >

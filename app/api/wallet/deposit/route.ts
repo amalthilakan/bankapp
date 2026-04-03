@@ -10,14 +10,14 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { walletId, amount, currency } = body;
+    const { walletId, bankAccountId, amount, currency } = body;
 
-    if (!walletId || !amount || amount <= 0) {
+    if (!walletId || !bankAccountId || !amount || amount <= 0) {
       return Response.json({ success: false, error: 'Invalid deposit parameters' }, { status: 400 });
     }
 
-    const wallet = await deposit(user.id, walletId, Number(amount), currency || 'USD');
-    return Response.json({ success: true, data: wallet });
+    const result = await deposit(user.id, walletId, bankAccountId, Number(amount), currency || 'USD');
+    return Response.json({ success: true, data: result });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Deposit failed';
     return Response.json({ success: false, error: message }, { status: 400 });

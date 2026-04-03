@@ -222,6 +222,33 @@ async function syncChartWithTotal(
   }
 }
 
+async function getBankAccountsWithNormalizedSelection(
+  userId: string,
+  bankAccountsCollection: Collection<OwnedBankAccount>
+) {
+  const bankAccounts = await bankAccountsCollection.find({ ownerId: userId }).sort({ createdAt: 1 }).toArray();
+
+  if (bankAccounts.length === 0) {
+    return bankAccounts;
+  }
+
+  const selectedAccounts = bankAccounts.filter((account) => account.isSelected);
+
+  if (selectedAccounts.length === 1) {
+    return bankAccounts;
+  }
+
+  const selectedId = selectedAccounts[0]?.id ?? bankAccounts[0].id;
+
+  await bankAccountsCollection.updateMany({ ownerId: userId }, { $set: { isSelected: false } });
+  await bankAccountsCollection.updateOne({ ownerId: userId, id: selectedId }, { $set: { isSelected: true } });
+
+  return bankAccounts.map((account) => ({
+    ...account,
+    isSelected: account.id === selectedId,
+  }));
+}
+
 export async function ensureUserSeedData(userId: string) {
   const collections = await ensureCollections();
   const seedStateId = getSeedStateId(userId);
@@ -304,13 +331,73 @@ export async function addWalletAccount(
   return toPlainObject(wallet);
 }
 
+export async function deleteWalletAccount(userId: string, id: string): Promise<boolean> {
+  const collections = await ensureCollections();
+  const existingWallet = await collections.walletAccounts.findOne({ ownerId: userId, id });
+
+  if (!existingWallet) {
+    return false;
+  }
+
+  await Promise.all([
+    collections.walletAccounts.deleteOne({ ownerId: userId, id }),
+    collections.transactions.deleteMany({ ownerId: userId, walletId: id }),
+  ]);
+
+  const remainingWallets = await collections.walletAccounts.countDocuments({ ownerId: userId });
+
+  if (remainingWallets === 0) {
+    await collections.chartData.deleteMany({ ownerId: userId });
+  } else {
+    await syncChartWithTotal(userId, collections.walletAccounts, collections.chartData);
+  }
+
+  return true;
+}
+
 export async function deposit(
   userId: string,
   walletId: string,
+  bankAccountId: string,
   amount: number,
   currency: string
-): Promise<WalletAccount> {
+): Promise<{ wallet: WalletAccount; bankAccount: BankAccount }> {
   const collections = await ensureCollections();
+  const [existingWallet, existingBankAccount] = await Promise.all([
+    collections.walletAccounts.findOne({ ownerId: userId, id: walletId }),
+    collections.bankAccounts.findOne({ ownerId: userId, id: bankAccountId }),
+  ]);
+
+  if (!existingWallet) {
+    throw new Error('Wallet not found');
+  }
+
+  if (!existingBankAccount) {
+    throw new Error('Bank account not found');
+  }
+
+  if (existingBankAccount.balance < amount) {
+    throw new Error('Insufficient bank balance');
+  }
+
+  const updatedBankAccount = await collections.bankAccounts.findOneAndUpdate(
+    { ownerId: userId, id: bankAccountId, balance: { $gte: amount } },
+    {
+      $inc: { balance: -amount },
+      $set: { isSelected: true },
+    },
+    { returnDocument: 'after' }
+  );
+
+  if (!updatedBankAccount) {
+    throw new Error('Insufficient bank balance');
+  }
+
+  await collections.bankAccounts.updateMany(
+    { ownerId: userId, id: { $ne: bankAccountId } },
+    { $set: { isSelected: false } }
+  );
+
   const updatedWallet = await collections.walletAccounts.findOneAndUpdate(
     { ownerId: userId, id: walletId },
     { $inc: { balance: amount } },
@@ -318,6 +405,10 @@ export async function deposit(
   );
 
   if (!updatedWallet) {
+    await collections.bankAccounts.updateOne(
+      { ownerId: userId, id: bankAccountId },
+      { $inc: { balance: amount } }
+    );
     throw new Error('Wallet not found');
   }
 
@@ -325,18 +416,22 @@ export async function deposit(
     ownerId: userId,
     id: `tx-${randomUUID()}`,
     type: 'deposit',
-    description: `Added to ${updatedWallet.name}`,
+    description: `Transferred from ${updatedBankAccount.bankName} to ${updatedWallet.name}`,
     amount,
     currency: currency as Transaction['currency'],
     status: 'Success',
     date: new Date().toISOString(),
     walletId,
+    bankAccountId,
   };
 
   await collections.transactions.insertOne(transaction);
   await syncChartWithTotal(userId, collections.walletAccounts, collections.chartData);
 
-  return toPlainObject(updatedWallet);
+  return {
+    wallet: toPlainObject(updatedWallet),
+    bankAccount: toPlainObject(updatedBankAccount),
+  };
 }
 
 export async function withdraw(
@@ -386,7 +481,7 @@ export async function withdraw(
 
 export async function getBankAccounts(userId: string): Promise<BankAccount[]> {
   const collections = await ensureCollections();
-  const bankAccounts = await collections.bankAccounts.find({ ownerId: userId }).sort({ createdAt: 1 }).toArray();
+  const bankAccounts = await getBankAccountsWithNormalizedSelection(userId, collections.bankAccounts);
   return toPlainArray(bankAccounts);
 }
 
@@ -413,8 +508,45 @@ export async function addBankAccount(
 
 export async function deleteBankAccount(userId: string, id: string): Promise<boolean> {
   const collections = await ensureCollections();
+  const existingAccount = await collections.bankAccounts.findOne({ ownerId: userId, id });
+
+  if (!existingAccount) {
+    return false;
+  }
+
   const result = await collections.bankAccounts.deleteOne({ ownerId: userId, id });
+
+  if (result.deletedCount > 0 && existingAccount.isSelected) {
+    await getBankAccountsWithNormalizedSelection(userId, collections.bankAccounts);
+  }
+
   return result.deletedCount > 0;
+}
+
+export async function selectBankAccount(userId: string, id: string): Promise<BankAccount> {
+  const collections = await ensureCollections();
+  const existingAccount = await collections.bankAccounts.findOne({ ownerId: userId, id });
+
+  if (!existingAccount) {
+    throw new Error('Bank account not found');
+  }
+
+  await collections.bankAccounts.updateMany(
+    { ownerId: userId, id: { $ne: id } },
+    { $set: { isSelected: false } }
+  );
+
+  const updatedAccount = await collections.bankAccounts.findOneAndUpdate(
+    { ownerId: userId, id },
+    { $set: { isSelected: true } },
+    { returnDocument: 'after' }
+  );
+
+  if (!updatedAccount) {
+    throw new Error('Bank account not found');
+  }
+
+  return toPlainObject(updatedAccount);
 }
 
 export async function getTransactions(

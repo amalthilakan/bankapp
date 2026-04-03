@@ -43,6 +43,7 @@ type Action =
   | { type: 'SET_TRANSACTIONS'; payload: Transaction[] }
   | { type: 'ADD_BANK_ACCOUNT'; payload: BankAccount }
   | { type: 'REMOVE_BANK_ACCOUNT'; payload: string }
+  | { type: 'REMOVE_WALLET'; payload: string }
   | { type: 'UPDATE_WALLET'; payload: WalletAccount }
   | { type: 'ADD_TRANSACTION'; payload: Transaction };
 
@@ -68,6 +69,8 @@ function reducer(state: WalletState, action: Action): WalletState {
       return { ...state, bankAccounts: [...state.bankAccounts, action.payload] };
     case 'REMOVE_BANK_ACCOUNT':
       return { ...state, bankAccounts: state.bankAccounts.filter((a) => a.id !== action.payload) };
+    case 'REMOVE_WALLET':
+      return { ...state, walletAccounts: state.walletAccounts.filter((wallet) => wallet.id !== action.payload) };
     case 'UPDATE_WALLET':
       return {
         ...state,
@@ -96,11 +99,13 @@ interface WalletContextValue extends WalletState {
   fetchWalletData: () => Promise<void>;
   fetchBankAccounts: () => Promise<void>;
   fetchTransactions: () => Promise<void>;
-  depositFunds: (walletId: string, amount: number, currency: string) => Promise<void>;
+  depositFunds: (walletId: string, bankAccountId: string, amount: number, currency: string) => Promise<void>;
   withdrawFunds: (walletId: string, amount: number, currency: string) => Promise<void>;
   addWalletAccount: (data: { name: string; balance: number; currency: Currency }) => Promise<void>;
   addBankAccount: (data: { bankName: string; accountNumber: string; accountHolder: string; currency: Currency; balance: number }) => Promise<void>;
+  selectBankAccount: (id: string) => Promise<void>;
   removeBankAccount: (id: string) => Promise<void>;
+  removeWalletAccount: (id: string) => Promise<void>;
 }
 
 const WalletContext = createContext<WalletContextValue | null>(null);
@@ -175,11 +180,11 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
   }, [handleUnauthorized, pathname]);
 
-  const depositFunds = useCallback(async (walletId: string, amount: number, currency: string) => {
+  const depositFunds = useCallback(async (walletId: string, bankAccountId: string, amount: number, currency: string) => {
     const res = await fetch('/api/wallet/deposit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ walletId, amount, currency }),
+      body: JSON.stringify({ walletId, bankAccountId, amount, currency }),
     });
     if (res.status === 401) {
       handleUnauthorized();
@@ -187,10 +192,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
     const json = await res.json();
     if (!json.success) throw new Error(json.error || 'Deposit failed');
-    dispatch({ type: 'UPDATE_WALLET', payload: json.data });
-    await fetchTransactions();
-    await fetchWalletData();
-  }, [fetchTransactions, fetchWalletData, handleUnauthorized]);
+    dispatch({ type: 'UPDATE_WALLET', payload: json.data.wallet });
+    await Promise.all([fetchTransactions(), fetchWalletData(), fetchBankAccounts()]);
+  }, [fetchBankAccounts, fetchTransactions, fetchWalletData, handleUnauthorized]);
 
   const withdrawFunds = useCallback(async (walletId: string, amount: number, currency: string) => {
     const res = await fetch('/api/wallet/withdraw', {
@@ -240,6 +244,17 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'ADD_BANK_ACCOUNT', payload: json.data });
   }, [handleUnauthorized]);
 
+  const selectBankAccount = useCallback(async (id: string) => {
+    const res = await fetch(`/api/accounts/${id}`, { method: 'PATCH' });
+    if (res.status === 401) {
+      handleUnauthorized();
+      return;
+    }
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to select bank account');
+    await fetchBankAccounts();
+  }, [fetchBankAccounts, handleUnauthorized]);
+
   const removeBankAccount = useCallback(async (id: string) => {
     const res = await fetch(`/api/accounts/${id}`, { method: 'DELETE' });
     if (res.status === 401) {
@@ -248,8 +263,21 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     }
     const json = await res.json();
     if (!json.success) throw new Error(json.error || 'Failed to remove account');
-    dispatch({ type: 'REMOVE_BANK_ACCOUNT', payload: id });
-  }, [handleUnauthorized]);
+    await fetchBankAccounts();
+  }, [fetchBankAccounts, handleUnauthorized]);
+
+  const removeWalletAccount = useCallback(async (id: string) => {
+    const res = await fetch(`/api/wallet/${id}`, { method: 'DELETE' });
+    if (res.status === 401) {
+      handleUnauthorized();
+      return;
+    }
+    const json = await res.json();
+    if (!json.success) throw new Error(json.error || 'Failed to remove wallet');
+    dispatch({ type: 'REMOVE_WALLET', payload: id });
+    await fetchTransactions();
+    await fetchWalletData();
+  }, [fetchTransactions, fetchWalletData, handleUnauthorized]);
 
   useEffect(() => {
     if (pathname === '/login') {
@@ -272,7 +300,9 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
         withdrawFunds,
         addWalletAccount,
         addBankAccount,
+        selectBankAccount,
         removeBankAccount,
+        removeWalletAccount,
       }}
     >
       {children}
