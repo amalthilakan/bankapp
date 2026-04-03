@@ -3,6 +3,7 @@
 import { FormEvent, useState, useTransition } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 import styles from '@/app/login/page.module.css';
 
@@ -11,13 +12,11 @@ type Mode = 'login' | 'register';
 export default function AuthForm() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>('login');
-  const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setError(null);
 
     const formData = new FormData(event.currentTarget);
     const endpoint = mode === 'register' ? '/api/auth/register' : '/api/auth/login';
@@ -38,14 +37,15 @@ export default function AuthForm() {
         const json = await response.json();
 
         if (!response.ok || !json.success) {
-          setError(json.error || 'Authentication failed.');
+          toast.error(json.error || 'Authentication failed.');
           return;
         }
 
+        toast.success(mode === 'login' ? 'Signed in successfully!' : 'Account created successfully!');
         router.replace('/');
         router.refresh();
       } catch {
-        setError('Something went wrong. Please try again.');
+        toast.error('Something went wrong. Please try again.');
       }
     });
   }
@@ -114,8 +114,6 @@ export default function AuthForm() {
             </button>
           </div>
         </label>
-
-        {error ? <p className={styles.error}>{error}</p> : null}
 
         <button className={styles.submitButton} type="submit" disabled={isPending}>
           {isPending ? 'Please wait...' : mode === 'login' ? 'Sign in' : 'Create account'}

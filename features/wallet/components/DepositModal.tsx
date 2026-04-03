@@ -3,6 +3,7 @@
 import { X, Wallet } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useWallet } from '@/features/wallet/context/WalletContext';
+import { toast } from 'react-hot-toast';
 import type { Currency } from '@/shared/types';
 import styles from './Modal.module.css';
 
@@ -20,7 +21,6 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
   const [walletId, setWalletId] = useState('');
   const [bankAccountId, setBankAccountId] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
@@ -41,12 +41,11 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (!bankAccountId) { setError('Please select a bank account'); return; }
-    if (!walletId) { setError('Please select a wallet'); return; }
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) { setError('Enter a valid amount'); return; }
+    if (!bankAccountId) { toast.error('Please select a bank account'); return; }
+    if (!walletId) { toast.error('Please select a wallet'); return; }
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) { toast.error('Enter a valid amount'); return; }
     if (selectedBankAccount && Number(amount) > selectedBankAccount.balance) {
-      setError(`Insufficient bank balance. Available: $${selectedBankAccount.balance.toLocaleString()}`);
+      toast.error(`Insufficient bank balance. Available: $${selectedBankAccount.balance.toLocaleString()}`);
       return;
     }
 
@@ -54,15 +53,16 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
     try {
       await depositFunds(walletId, bankAccountId, Number(amount), currency);
       setSuccess(true);
+      toast.success('Funds deposited successfully!');
       setTimeout(() => { setSuccess(false); onClose(); resetForm(); }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Deposit failed');
+      toast.error(err instanceof Error ? err.message : 'Deposit failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const resetForm = () => { setAmount(''); setWalletId(''); setBankAccountId(''); setCurrency('USD'); setError(''); };
+  const resetForm = () => { setAmount(''); setWalletId(''); setBankAccountId(''); setCurrency('USD'); };
 
   const handleClose = () => { resetForm(); onClose(); };
 
@@ -154,7 +154,7 @@ export default function DepositModal({ isOpen, onClose }: DepositModalProps) {
           </div>
 
           {/* Error */}
-          {error && <p className={styles.error}>{error}</p>}
+
 
           {/* Submit */}
           <button

@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { type Collection, type Document } from 'mongodb';
 import { getDb } from '@/server/db/mongodb';
 import type { User } from '@/shared/types';
 
@@ -77,14 +78,16 @@ export function normalizeCustomerStatus(value?: string) {
   return getSingleStatus(value);
 }
 
-async function safeAggregate<T>(collection: any, pipeline: any[]): Promise<T[]> {
+async function safeAggregate<T>(collection: Collection<Document>, pipeline: Document[]): Promise<T[]> {
   try {
-    return await collection.aggregate(pipeline).toArray();
-  } catch (error: any) {
-    if (error.code === 26 || (error.message && error.message.includes('ns does not exist'))) {
+    return await collection.aggregate(pipeline).toArray() as T[];
+  } catch (error: unknown) {
+    const err = error as { code?: number; message?: string };
+    if (err.code === 26 || (err.message && err.message.includes('ns does not exist'))) {
+      console.warn(`[db] Collection '${collection.collectionName}' does not exist yet. Returning empty results.`);
       return [];
     }
-    throw error;
+    throw new Error(`Aggregation failed on collection '${collection.collectionName}': ${err.message || 'Unknown error'}`);
   }
 }
 

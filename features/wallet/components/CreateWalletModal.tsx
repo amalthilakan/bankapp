@@ -4,6 +4,7 @@ import { X, Wallet } from 'lucide-react';
 import { useState } from 'react';
 
 import { useWallet } from '@/features/wallet/context/WalletContext';
+import { toast } from 'react-hot-toast';
 import type { Currency } from '@/shared/types';
 
 import styles from './Modal.module.css';
@@ -28,7 +29,6 @@ export default function CreateWalletModal({ isOpen, onClose }: CreateWalletModal
   const [balance, setBalance] = useState('');
   const [currency, setCurrency] = useState<Currency>('USD');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   if (!isOpen) {
@@ -41,7 +41,6 @@ export default function CreateWalletModal({ isOpen, onClose }: CreateWalletModal
     setName('');
     setBalance('');
     setCurrency('USD');
-    setError('');
     setSuccess(false);
   };
 
@@ -52,15 +51,13 @@ export default function CreateWalletModal({ isOpen, onClose }: CreateWalletModal
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    setError('');
-
     if (name.trim().length < 2) {
-      setError('Wallet name must be at least 2 characters long');
+      toast.error('Wallet name must be at least 2 characters long');
       return;
     }
 
     if (!Number.isFinite(openingBalance) || openingBalance < 0) {
-      setError('Opening balance must be a valid non-negative number');
+      toast.error('Opening balance must be a valid non-negative number');
       return;
     }
 
@@ -73,12 +70,13 @@ export default function CreateWalletModal({ isOpen, onClose }: CreateWalletModal
         currency,
       });
       setSuccess(true);
+      toast.success('Wallet created successfully!');
       setTimeout(() => {
         resetForm();
         onClose();
       }, 1200);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create wallet');
+      toast.error(err instanceof Error ? err.message : 'Failed to create wallet');
     } finally {
       setLoading(false);
     }
@@ -157,7 +155,7 @@ export default function CreateWalletModal({ isOpen, onClose }: CreateWalletModal
             </div>
           )}
 
-          {error && <p className={styles.error}>{error}</p>}
+
 
           <button
             id="add-wallet-submit-btn"

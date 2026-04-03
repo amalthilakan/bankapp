@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { Eye, EyeOff, LockKeyhole, Save, ShieldCheck, UserRound } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { toast } from 'react-hot-toast';
 
 import type { User } from '@/shared/types';
 
@@ -47,8 +48,6 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
     name: initialUser.name,
     email: initialUser.email,
   });
-  const [profileError, setProfileError] = useState<string | null>(null);
-  const [profileSuccess, setProfileSuccess] = useState<string | null>(null);
   const [profilePending, setProfilePending] = useState(false);
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -58,8 +57,6 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
     next: false,
     confirm: false,
   });
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [passwordSuccess, setPasswordSuccess] = useState<string | null>(null);
   const [passwordPending, setPasswordPending] = useState(false);
 
   const hasProfileChanges = useMemo(
@@ -78,8 +75,6 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
 
   async function handleProfileSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setProfileError(null);
-    setProfileSuccess(null);
     setProfilePending(true);
 
     try {
@@ -97,7 +92,7 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
       const json = await response.json();
 
       if (!response.ok || !json.success) {
-        setProfileError(json.error || 'Failed to update profile.');
+        toast.error(json.error || 'Failed to update profile.');
         return;
       }
 
@@ -106,11 +101,11 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
         name: json.data.name,
         email: json.data.email,
       });
-      setProfileSuccess('Profile updated successfully.');
+      toast.success('Profile updated successfully.');
       broadcastUserUpdate(json.data);
       router.refresh();
     } catch {
-      setProfileError('Something went wrong while saving your profile.');
+      toast.error('Something went wrong while saving your profile.');
     } finally {
       setProfilePending(false);
     }
@@ -118,11 +113,9 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
 
   async function handlePasswordSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setPasswordError(null);
-    setPasswordSuccess(null);
 
     if (newPassword !== confirmPassword) {
-      setPasswordError('New password and confirmation do not match.');
+      toast.error('New password and confirmation do not match.');
       return;
     }
 
@@ -146,16 +139,16 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
       const json = await response.json();
 
       if (!response.ok || !json.success) {
-        setPasswordError(json.error || 'Failed to update password.');
+        toast.error(json.error || 'Failed to update password.');
         return;
       }
 
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-      setPasswordSuccess('Password updated successfully.');
+      toast.success('Password updated successfully.');
     } catch {
-      setPasswordError('Something went wrong while updating your password.');
+      toast.error('Something went wrong while updating your password.');
     } finally {
       setPasswordPending(false);
     }
@@ -228,8 +221,7 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
               />
             </label>
 
-            {profileError ? <p className={styles.error}>{profileError}</p> : null}
-            {profileSuccess ? <p className={styles.success}>{profileSuccess}</p> : null}
+
 
             <button
               className={styles.submitButton}
@@ -328,8 +320,7 @@ export default function SettingsContent({ initialUser }: SettingsContentProps) {
               <p className={styles.tipText}>Choose a password that is at least 8 characters long and different from your current one.</p>
             </div>
 
-            {passwordError ? <p className={styles.error}>{passwordError}</p> : null}
-            {passwordSuccess ? <p className={styles.success}>{passwordSuccess}</p> : null}
+
 
             <button className={styles.submitButton} type="submit" disabled={passwordPending}>
               <ShieldCheck className={styles.submitIcon} />

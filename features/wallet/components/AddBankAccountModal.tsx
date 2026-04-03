@@ -4,6 +4,7 @@ import { X, Building2 } from 'lucide-react';
 import { useState } from 'react';
 
 import { useWallet } from '@/features/wallet/context/WalletContext';
+import { toast } from 'react-hot-toast';
 import type { Currency } from '@/shared/types';
 
 import styles from './Modal.module.css';
@@ -26,7 +27,6 @@ export default function AddBankAccountModal({ isOpen, onClose }: AddBankAccountM
   const [balance, setBalance] = useState('');
   const [currency, setCurrency] = useState<Currency>('USD');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   if (!isOpen) return null;
@@ -37,12 +37,11 @@ export default function AddBankAccountModal({ isOpen, onClose }: AddBankAccountM
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (!finalBankName) { setError('Please enter a bank name'); return; }
-    if (!accountNumber || accountNumber.length < 4) { setError('Account number must be at least 4 digits'); return; }
-    if (!accountHolder.trim()) { setError('Account holder name is required'); return; }
+    if (!finalBankName) { toast.error('Please enter a bank name'); return; }
+    if (!accountNumber || accountNumber.length < 4) { toast.error('Account number must be at least 4 digits'); return; }
+    if (!accountHolder.trim()) { toast.error('Account holder name is required'); return; }
     if (!Number.isFinite(openingBalance) || openingBalance < 0) {
-      setError('Opening balance must be a valid non-negative number');
+      toast.error('Opening balance must be a valid non-negative number');
       return;
     }
 
@@ -56,9 +55,10 @@ export default function AddBankAccountModal({ isOpen, onClose }: AddBankAccountM
         balance: openingBalance,
       });
       setSuccess(true);
+      toast.success('Bank account added successfully!');
       setTimeout(() => { resetForm(); onClose(); }, 1200);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add account');
+      toast.error(err instanceof Error ? err.message : 'Failed to add account');
     } finally {
       setLoading(false);
     }
@@ -66,7 +66,7 @@ export default function AddBankAccountModal({ isOpen, onClose }: AddBankAccountM
 
   const resetForm = () => {
     setBankName(''); setCustomBank(''); setAccountNumber('');
-    setAccountHolder(''); setBalance(''); setCurrency('USD'); setError(''); setSuccess(false);
+    setAccountHolder(''); setBalance(''); setCurrency('USD'); setSuccess(false);
   };
 
   const handleClose = () => { resetForm(); onClose(); };
@@ -182,8 +182,7 @@ export default function AddBankAccountModal({ isOpen, onClose }: AddBankAccountM
             </div>
           )}
 
-          {/* Error */}
-          {error && <p className={styles.error}>{error}</p>}
+
 
           {/* Submit */}
           <button

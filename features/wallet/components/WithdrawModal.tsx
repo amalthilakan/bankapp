@@ -3,6 +3,7 @@
 import { X, ArrowUpRight } from 'lucide-react';
 import { useState } from 'react';
 import { useWallet } from '@/features/wallet/context/WalletContext';
+import { toast } from 'react-hot-toast';
 import type { Currency } from '@/shared/types';
 import styles from './Modal.module.css';
 
@@ -19,7 +20,6 @@ export default function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
   const [currency, setCurrency] = useState<Currency>('USD');
   const [walletId, setWalletId] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
 
   if (!isOpen) return null;
@@ -28,11 +28,10 @@ export default function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    if (!walletId) { setError('Please select a wallet'); return; }
-    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) { setError('Enter a valid amount'); return; }
+    if (!walletId) { toast.error('Please select a wallet'); return; }
+    if (!amount || isNaN(Number(amount)) || Number(amount) <= 0) { toast.error('Enter a valid amount'); return; }
     if (selectedWallet && Number(amount) > selectedWallet.balance) {
-      setError(`Insufficient balance. Available: $${selectedWallet.balance.toLocaleString()}`);
+      toast.error(`Insufficient balance. Available: $${selectedWallet.balance.toLocaleString()}`);
       return;
     }
 
@@ -40,15 +39,16 @@ export default function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
     try {
       await withdrawFunds(walletId, Number(amount), currency);
       setSuccess(true);
+      toast.success('Funds withdrawn successfully!');
       setTimeout(() => { setSuccess(false); onClose(); resetForm(); }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Withdrawal failed');
+      toast.error(err instanceof Error ? err.message : 'Withdrawal failed');
     } finally {
       setLoading(false);
     }
   };
 
-  const resetForm = () => { setAmount(''); setWalletId(''); setCurrency('USD'); setError(''); };
+  const resetForm = () => { setAmount(''); setWalletId(''); setCurrency('USD'); };
 
   const handleClose = () => { resetForm(); onClose(); };
 
@@ -122,8 +122,7 @@ export default function WithdrawModal({ isOpen, onClose }: WithdrawModalProps) {
             </div>
           </div>
 
-          {/* Error */}
-          {error && <p className={styles.error}>{error}</p>}
+
 
           {/* Submit */}
           <button

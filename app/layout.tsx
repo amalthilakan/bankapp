@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import styles from './layout.module.css';
 import Navbar from '@/features/layout/components/Navbar';
+import { Toaster } from 'react-hot-toast';
 import { WalletProvider } from '@/features/wallet/context/WalletContext';
 
 const inter = Inter({
@@ -23,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} data-scroll-behavior="smooth" suppressHydrationWarning>
       <body className={styles.body}>
+        <Toaster position="top-center" />
         <WalletProvider>
           <Navbar />
           <main className={styles.main}>
