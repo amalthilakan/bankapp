@@ -1,0 +1,56 @@
+.card {
+  background-color: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08); /* white/8 */
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 150px;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a1a1aa; /* zinc-400 */
+}
+
+.moreBtn {
+  color: #52525b; /* zinc-600 */
+  padding: 0;
+  border: none;
+  background: none;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.moreBtn:hover {
+  color: white;
+}
+
+.moreIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.balance {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.change {
+  font-size: 10px;
+  color: var(--color-green);
+}

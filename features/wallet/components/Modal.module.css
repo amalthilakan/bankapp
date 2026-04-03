@@ -1,0 +1,275 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 24px;
+  width: 100%;
+  max-width: 448px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  animation: fadeZoom 0.2s ease-out;
+}
+
+@keyframes fadeZoom {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.headerInfo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.iconWrapper {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background-color: rgba(74, 222, 128, 0.1); /* green-500/10 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.iconWrapperWithdraw {
+  background-color: rgba(239, 68, 68, 0.1); /* red-500/10 */
+}
+.iconWrapperAdd {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.icon {
+  width: 20px;
+  height: 20px;
+  color: var(--color-green);
+}
+.iconWithdraw {
+  color: #f87171; /* red-400 */
+}
+.iconAdd {
+  color: white;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: white;
+}
+
+.subtitle {
+  font-size: 12px;
+  color: #71717a; /* zinc-500 */
+}
+
+.closeBtn {
+  color: #71717a; /* zinc-500 */
+  padding: 4px;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.closeBtn:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.closeIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a1a1aa; /* zinc-400 */
+}
+
+.inputContainer {
+  display: flex;
+  gap: 8px;
+}
+
+.input, .select {
+  background-color: var(--color-surface-2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: white;
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+}
+.input:focus, .select:focus {
+  border-color: rgba(74, 222, 128, 0.5); /* green/50 */
+}
+
+.input::placeholder {
+  color: #52525b; /* zinc-600 */
+}
+
+.select {
+  appearance: none;
+  cursor: pointer;
+}
+
+.selectCurrency {
+  width: 96px;
+  text-align: center;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+.error {
+  color: #f87171; /* red-400 */
+  font-size: 12px;
+  background-color: rgba(239, 68, 68, 0.1); /* red-500/10 */
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.submitBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+  margin-top: 4px;
+  background-color: white;
+  color: black;
+  border: none;
+  cursor: pointer;
+}
+.submitBtn:hover:not(:disabled) {
+  background-color: #f4f4f5; /* zinc-100 */
+}
+.submitBtn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+.submitBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.submitSuccess {
+  background-color: var(--color-green);
+  color: black;
+}
+
+.availableBalance {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.balanceLabel {
+  font-size: 12px;
+  color: #71717a; /* zinc-500 */
+}
+
+.balanceValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+/* Blue icon variant (AddBankAccountModal) */
+.iconWrapperBlue {
+  background-color: rgba(96, 165, 250, 0.1); /* blue-400/10 */
+}
+
+.iconBlue {
+  color: #60a5fa; /* blue-400 */
+}
+
+/* Two-column field row */
+.fieldRow {
+  display: flex;
+  gap: 8px;
+}
+
+.fieldFlex {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+/* Mono font for account number input */
+.inputMono {
+  font-family: 'Courier New', monospace;
+}
+
+/* Preview card */
+.preview {
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+.previewLabel {
+  font-size: 12px;
+  color: #71717a; /* zinc-500 */
+  margin-bottom: 4px;
+}
+
+.previewName {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.previewMeta {
+  font-size: 12px;
+  color: #a1a1aa; /* zinc-400 */
+}

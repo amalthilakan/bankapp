@@ -1,0 +1,180 @@
+.navbar {
+  flex: none;
+  background-color: var(--color-background);
+  border-bottom: 1px solid var(--color-border);
+  height: 56px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 24px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+  cursor: pointer;
+}
+
+.avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(to bottom right, #fb923c, #db2777);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  color: white;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+}
+
+.userMeta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.email {
+  font-size: 11px;
+  color: #71717a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.divider {
+  height: 20px;
+  width: 1px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.navLink {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.navLinkActive {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.navLinkInactive {
+  color: #a1a1aa;
+}
+.navLinkInactive:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.spacer {
+  flex: 1;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 6px 12px;
+  width: 192px;
+  transition: border-color 0.2s;
+}
+.search:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.searchIcon {
+  width: 14px;
+  height: 14px;
+  color: #71717a; /* zinc-500 */
+  flex-shrink: 0;
+}
+
+.searchInput {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  outline: none;
+  width: 100%;
+}
+.searchInput::placeholder {
+  color: #52525b; /* zinc-600 */
+}
+
+.logoutBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.04);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.logoutBtn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.logoutBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.logoutIcon {
+  width: 14px;
+  height: 14px;
+}
+
+@media (max-width: 980px) {
+  .navbar {
+    gap: 12px;
+    padding: 10px 12px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 56px;
+  }
+
+  .brand {
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .search {
+    width: 100%;
+    order: 2;
+  }
+
+  .spacer {
+    display: none;
+  }
+}

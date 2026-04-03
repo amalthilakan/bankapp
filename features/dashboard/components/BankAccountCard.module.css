@@ -1,0 +1,98 @@
+.card {
+  position: relative;
+  background-color: var(--color-surface);
+  border: 1px solid rgba(255, 255, 255, 0.08); /* white/8 */
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 150px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.cardSelected {
+  border-color: rgba(74, 222, 128, 0.6); /* green/60 */
+  box-shadow: 0 0 15px rgba(74, 222, 128, 0.08);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.bankName {
+  font-size: 12px;
+  font-weight: 500;
+  color: #a1a1aa; /* zinc-400 */
+}
+
+.moreBtn {
+  color: #52525b; /* zinc-600 */
+  padding: 2px;
+  border-radius: 4px;
+  transition: color 0.2s;
+}
+.moreBtn:hover {
+  color: white;
+}
+
+.moreIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.balance {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.balanceSelected {
+  color: var(--color-green);
+}
+
+.balanceDefault {
+  color: white;
+}
+
+.change {
+  font-size: 10px;
+  color: var(--color-green);
+}
+
+.dropdown {
+  position: absolute;
+  right: 8px;
+  top: 32px;
+  z-index: 20;
+  background-color: #1e1e1e;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  min-width: 110px;
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 12px;
+  color: #f87171; /* red-400 */
+  transition: background-color 0.2s;
+}
+.removeBtn:hover {
+  background-color: rgba(239, 68, 68, 0.1); /* red-500/10 */
+}
+
+.removeIcon {
+  width: 12px;
+  height: 12px;
+}

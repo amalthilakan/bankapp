@@ -1,0 +1,475 @@
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at top right, rgba(74, 222, 128, 0.14), transparent 28%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01)),
+    var(--color-surface);
+}
+
+@media (min-width: 640px) {
+  .hero {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.eyebrow {
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-green);
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+}
+
+.subtitle {
+  margin-top: 6px;
+  max-width: 680px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #a1a1aa;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.metrics {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 768px) {
+  .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.metricCard {
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-surface);
+  padding: 20px;
+}
+
+.metricIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+  background-color: rgba(74, 222, 128, 0.12);
+}
+
+.metricIcon {
+  width: 18px;
+  height: 18px;
+  color: var(--color-green);
+}
+
+.metricLabel {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #71717a;
+}
+
+.metricValue {
+  margin-top: 8px;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+}
+
+.panel {
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: var(--color-surface);
+  padding: 24px;
+}
+
+.panelHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.panelTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.panelSubtitle {
+  margin-top: 4px;
+  font-size: 13px;
+  color: #71717a;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.filterWrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 190px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
+}
+
+.filterIcon {
+  width: 14px;
+  height: 14px;
+  color: #71717a;
+}
+
+.select {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 14px;
+  outline: none;
+}
+
+.select option {
+  background: var(--color-surface);
+  color: white;
+}
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
+  flex: 1 1 280px;
+  min-width: 220px;
+}
+
+.searchIcon {
+  width: 14px;
+  height: 14px;
+  color: #71717a;
+}
+
+.searchInput {
+  background: transparent;
+  color: white;
+  font-size: 14px;
+  border: none;
+  outline: none;
+  flex: 1;
+}
+.searchInput::placeholder {
+  color: #52525b; /* zinc-600 */
+}
+
+.btnSecondary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  color: #a1a1aa; /* zinc-400 */
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.btnSecondary:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btnPrimary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: white;
+  color: black;
+  border-radius: 12px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+}
+.btnPrimary:hover {
+  background-color: #f4f4f5; /* zinc-100 */
+}
+.btnPrimary:active {
+  transform: scale(0.95);
+}
+
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a1a1aa;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btnGhost:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+.btnIcon {
+  width: 14px;
+  height: 14px;
+}
+
+/* Table */
+.tableContainer {
+  background-color: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 18px;
+  overflow: hidden;
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 860px;
+}
+
+.th {
+  text-align: left;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #71717a;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+.tr:last-child {
+  border-bottom: none;
+}
+.tr:hover {
+  background-color: rgba(255, 255, 255, 0.02);
+}
+.trAlt {
+  background-color: rgba(255, 255, 255, 0.01);
+}
+
+.trCurrent {
+  background-color: rgba(74, 222, 128, 0.05);
+}
+
+.td {
+  padding: 16px 20px;
+}
+
+.avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #22c55e, #0f766e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: bold;
+  color: white;
+  flex-shrink: 0;
+}
+
+.customerCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.customerMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.customerId {
+  font-size: 12px;
+  color: #71717a;
+}
+
+.currentBadge {
+  margin-left: auto;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background-color: rgba(74, 222, 128, 0.12);
+  color: var(--color-green);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.email {
+  font-size: 14px;
+  color: #a1a1aa;
+}
+
+.balance {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.joined {
+  font-size: 14px;
+  color: #71717a;
+}
+
+.emptyState {
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  padding: 36px 20px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.emptyTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.emptyText {
+  max-width: 520px;
+  margin: 10px auto 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #a1a1aa;
+}
+
+.emptyBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 18px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: white;
+  color: black;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Status Badge Classes */
+.statusBadge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  display: inline-block;
+}
+
+.statusActive {
+  color: var(--color-green);
+  background-color: rgba(74, 222, 128, 0.1);
+}
+
+.statusNew {
+  color: #60a5fa;
+  background-color: rgba(96, 165, 250, 0.12);
+}
+
+.statusIdle {
+  color: #a1a1aa;
+  background-color: rgba(161, 161, 170, 0.12);
+}
+
+@media (max-width: 720px) {
+  .hero {
+    padding: 22px;
+  }
+
+  .panel {
+    padding: 18px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .metricValue {
+    font-size: 24px;
+  }
+
+  .currentBadge {
+    display: none;
+  }
+}

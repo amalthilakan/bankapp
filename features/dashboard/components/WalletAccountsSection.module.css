@@ -1,0 +1,126 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  transition: background-color 0.2s, border-color 0.2s;
+  cursor: pointer;
+}
+.actionBtn:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.actionIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.scrollArea {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+/* For small scrollbar */
+.scrollArea::-webkit-scrollbar {
+  height: 4px;
+}
+.scrollArea::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05); 
+  border-radius: 4px;
+}
+.scrollArea::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2); 
+  border-radius: 4px;
+}
+
+.emptyState {
+  min-height: 136px;
+  width: 100%;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.emptyTitle {
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.emptyText {
+  color: #a1a1aa;
+  font-size: 13px;
+  line-height: 1.5;
+  max-width: 420px;
+}
+
+.emptyBtn {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  border: none;
+  background: white;
+  color: black;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.emptyBtn:hover {
+  background: #f4f4f5;
+}
+
+.emptyBtn:active {
+  transform: scale(0.98);
+}
+
+.skeleton {
+  min-width: 140px;
+  height: 96px;
+  background-color: rgba(255, 255, 255, 0.05); /* white/5 */
+  border-radius: 12px;
+  flex-shrink: 0;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .5;
+  }
+}

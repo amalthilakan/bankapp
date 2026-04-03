@@ -1,0 +1,254 @@
+.page {
+  min-height: 100%;
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  background:
+    radial-gradient(circle at top left, rgba(74, 222, 128, 0.12), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(251, 146, 60, 0.14), transparent 30%),
+    linear-gradient(135deg, #05070c 0%, #0b1020 55%, #111827 100%);
+}
+
+.hero {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+}
+
+.heroCopy {
+  max-width: 560px;
+}
+
+.kicker {
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 16px;
+}
+
+.heroTitle {
+  font-size: clamp(32px, 5vw, 56px);
+  line-height: 1.05;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 20px;
+}
+
+.heroText {
+  font-size: 18px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.72);
+  margin-bottom: 28px;
+}
+
+.heroPanel {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.panelValue {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+.panelLabel {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.62);
+  margin-top: 6px;
+}
+
+.formWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  background: rgba(4, 8, 20, 0.55);
+  backdrop-filter: blur(20px);
+}
+
+.formCard {
+  width: min(460px, 100%);
+  padding: 32px;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(9, 14, 28, 0.92);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+}
+
+.formHeader {
+  margin-bottom: 24px;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #4ade80;
+  margin-bottom: 10px;
+}
+
+.title {
+  font-size: 30px;
+  line-height: 1.15;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.modeSwitch {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  padding: 6px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  margin-bottom: 24px;
+}
+
+.modeButton {
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.64);
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.modeButtonActive {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.input {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.03);
+  color: white;
+  padding: 14px 16px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, background-color 0.2s;
+}
+
+.input:focus {
+  border-color: rgba(74, 222, 128, 0.45);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.input::placeholder {
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.passwordField {
+  position: relative;
+}
+
+.passwordField .input {
+  padding-right: 52px;
+}
+
+.eyeButton {
+  position: absolute;
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.46);
+  cursor: pointer;
+  transition: color 0.2s, background-color 0.2s;
+}
+
+.eyeButton:hover {
+  color: white;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.eyeIcon {
+  width: 16px;
+  height: 16px;
+}
+
+.error {
+  font-size: 13px;
+  color: #fda4af;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(190, 24, 93, 0.16);
+  border: 1px solid rgba(244, 114, 182, 0.18);
+}
+
+.submitButton {
+  margin-top: 8px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+  font-size: 15px;
+  font-weight: 700;
+  transition: transform 0.18s ease, filter 0.18s ease;
+}
+
+.submitButton:hover {
+  filter: brightness(1.05);
+}
+
+.submitButton:active {
+  transform: translateY(1px);
+}
+
+.submitButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@media (max-width: 960px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .hero {
+    padding: 32px 24px 12px;
+  }
+
+  .heroPanel {
+    grid-template-columns: 1fr;
+  }
+
+  .formWrap {
+    padding: 24px;
+  }
+}
